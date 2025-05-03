@@ -26,11 +26,11 @@ if file_upload1 is not None and file_upload2 is not None:
 
     # Rename for clarity
     revenue_df.columns = ['year', 'quarter', 'revenue_in_millions', 'report_date']
-    stock_df.columns = ['idx', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'col8', 'col9']
+    stock_df.columns = ['idx', 'Date', 'Open', 'High', 'Low', 'Stock_value', 'Volume', 'col8', 'col9']
 
     # Convert both date columns to datetime
-    revenue_df['report_date'] = pd.to_datetime(revenue_df['report_date'], errors='coerce')
-    stock_df['Date'] = pd.to_datetime(stock_df['Date'], errors='coerce', utc=True)
+    revenue_df['report_date'] = pd.to_datetime(revenue_df['report_date'], errors='coerce') 
+    stock_df['Date'] = pd.to_datetime(stock_df['Date'], errors='coerce', utc=True) 
 
     # Remove timezone info from stock data (make it naive)
     stock_df['Date'] = stock_df['Date'].dt.tz_localize(None)
@@ -38,7 +38,6 @@ if file_upload1 is not None and file_upload2 is not None:
     # Sort both for merge_asof
     revenue_df = revenue_df.sort_values('report_date')
     stock_df = stock_df.sort_values('Date')
-
     # Merge using asof
     merged_df = pd.merge_asof(
         revenue_df,
@@ -55,11 +54,15 @@ if file_upload1 is not None and file_upload2 is not None:
         tooltip=['report_date', 'revenue_in_millions']
     ).properties(title="Tesla Quarterly Revenue Over Time")
 
-    chart2 = alt.Chart(merged_df).mark_circle(size=60).encode(
+    chart2 = alt.Chart(merged_df).mark_circle(color= 'red',size=60).encode(
         x='revenue_in_millions:Q',
-        y='Close:Q',
-        tooltip=['report_date', 'revenue_in_millions', 'Close']
+        y='Stock_value:Q',
+        tooltip=['report_date', 'revenue_in_millions', 'Stock_value']
     ).properties(title="Tesla Revenue vs. Stock Close Price")
 
     st.altair_chart(chart1, use_container_width=True)
     st.altair_chart(chart2, use_container_width=True)
+
+
+    st.markdown('Author: Solomon Mengesha Kebede')
+
